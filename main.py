@@ -2,10 +2,10 @@ import discord
 from discord.ext import commands
 import os
 
-# --- НАСТРОЙКИ (Вставь свои ID) ---
-ADMIN_CHANNEL_ID = 123456789012345678  # Канал, куда приходят заявки
-PUBLIC_LIST_CHANNEL_ID = 123456789012345678  # Канал, куда попадает одобренное
-# ---------------------------------
+# --- НАСТРОЙКИ (Замени на свои цифры) ---
+ADMIN_CHANNEL_ID = 1127290770571931739  # Канал для модераторов
+PUBLIC_LIST_CHANNEL_ID = 1359230337602949391  # Канал для одобренных постов
+# ---------------------------------------
 
 class AdminReview(discord.ui.View):
     def __init__(self, content, author_name):
@@ -38,7 +38,8 @@ class MyModal(discord.ui.Modal, title='Предложить запись в сп
     async def on_submit(self, interaction: discord.Interaction):
         admin_channel = interaction.client.get_channel(ADMIN_CHANNEL_ID)
         if not admin_channel:
-            await interaction.response.send_message("Ошибка: Канал модерации не настроен!", ephemeral=True)
+            # Если бот не видит канал, он напишет это в чат
+            await interaction.response.send_message(f"Ошибка: Канал модерации (ID: {ADMIN_CHANNEL_ID}) не найден или у бота нет прав!", ephemeral=True)
             return
 
         embed = discord.Embed(title="📝 Новая заявка", color=discord.Color.orange())
@@ -59,17 +60,18 @@ class StartView(discord.ui.View):
 class Bot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
+        intents.members = True # На всякий случай для имен пользователей
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
-        # Регистрируем View, чтобы кнопки работали всегда, даже после перезагрузки
         self.add_view(StartView())
         await self.tree.sync()
+        print(f"Бот запущен под именем {self.user}")
 
 bot = Bot()
 
 @bot.tree.command(name="setup", description="Создать кнопку для отправки заявок")
-@commands.has_permissions(administrator=True)
+@app_commands.checks.has_permissions(administrator=True)
 async def setup(interaction: discord.Interaction):
     await interaction.response.send_message("Нажмите кнопку ниже, чтобы предложить свою запись:", view=StartView())
 
