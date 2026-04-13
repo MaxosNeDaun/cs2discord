@@ -27,19 +27,20 @@ class AdminReview(discord.ui.View):
     async def reject(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.edit_message(content=f"❌ Отклонено модератором {interaction.user.mention}", view=None, embed=None)
 
-class MyModal(discord.ui.Modal, title='Предложить запись в список'):
+class MyModal(discord.ui.Modal, title='Предложить запись'):
+    # Установлены ограничения: min_length=1, max_length=200
     answer = discord.ui.TextInput(
-        label='Ваше сообщение',
+        label='Ваше сообщение (1-200 символов)',
         style=discord.TextStyle.paragraph,
-        placeholder='Напишите здесь то, что попадет в список...',
-        min_length=5,
-        max_length=500
+        placeholder='Введите ваш текст здесь...',
+        min_length=1,
+        max_length=200
     )
 
     async def on_submit(self, interaction: discord.Interaction):
         admin_channel = interaction.client.get_channel(ADMIN_CHANNEL_ID)
         if not admin_channel:
-            await interaction.response.send_message(f"Ошибка: Канал модерации не найден! Проверьте права бота.", ephemeral=True)
+            await interaction.response.send_message(f"Ошибка: Канал модерации не найден!", ephemeral=True)
             return
 
         embed = discord.Embed(title="📝 Новая заявка", color=discord.Color.orange())
@@ -47,13 +48,13 @@ class MyModal(discord.ui.Modal, title='Предложить запись в сп
         embed.add_field(name="Текст", value=self.answer.value, inline=False)
         
         await admin_channel.send(embed=embed, view=AdminReview(self.answer.value, interaction.user.display_name))
-        await interaction.response.send_message('Ваше сообщение отправлено на проверку модераторам!', ephemeral=True)
+        await interaction.response.send_message('Ваше сообщение отправлено на проверку!', ephemeral=True)
 
 class StartView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="Оставить запись", style=discord.ButtonStyle.primary, custom_id="main_start_btn")
+    @discord.ui.button(label="Предложить новое название", style=discord.ButtonStyle.primary, custom_id="main_start_btn")
     async def open_modal(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(MyModal())
 
@@ -67,13 +68,13 @@ class Bot(commands.Bot):
     async def setup_hook(self):
         self.add_view(StartView())
         await self.tree.sync()
-        print(f"Бот запущен под именем {self.user}")
+        print(f"Бот запущен как {self.user}")
 
 bot = Bot()
 
-@bot.tree.command(name="setup", description="Создать кнопку для отправки заявок")
+@bot.tree.command(name="setup", description="Создать кнопку для заявок")
 @app_commands.checks.has_permissions(administrator=True)
 async def setup(interaction: discord.Interaction):
-    await interaction.response.send_message("Нажмите кнопку ниже, чтобы предложить свою запись:", view=StartView())
+    await interaction.response.send_message("Нажмите кнопку ниже, чтобы предложить новое название клана:", view=StartView())
 
 bot.run(os.getenv('TOKEN'))
