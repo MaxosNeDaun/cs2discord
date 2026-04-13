@@ -93,6 +93,6 @@ bot = Bot()
 @bot.tree.command(name="setup", description="Создать кнопку")
 @app_commands.checks.has_permissions(administrator=True)
 async def setup(interaction: discord.Interaction):
-    await interaction.response.send_message("Кнопка для предложений:", view=StartView())
+    await interaction.response.send_message("Предложение и их автор", view=StartView())
 
 bot.run(os.getenv('TOKEN'))
