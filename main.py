@@ -1,12 +1,12 @@
 import discord
 from discord.ext import commands
-from discord import app_commands  # ВОТ ЭТОЙ СТРОКИ НЕ ХВАТАЛО
+from discord import app_commands
 import os
 
-# --- НАСТРОЙКИ (Замени на свои цифры) ---
-ADMIN_CHANNEL_ID = 1127290770571931739  # Канал для модераторов
-PUBLIC_LIST_CHANNEL_ID = 1359230337602949391  # Канал для одобренных постов
-# ---------------------------------------
+# --- ТВОИ НАСТРОЙКИ ---
+ADMIN_CHANNEL_ID = 1127290770571931739
+PUBLIC_LIST_CHANNEL_ID = 1359230337602949391
+# ----------------------
 
 class AdminReview(discord.ui.View):
     def __init__(self, content, author_name):
@@ -39,8 +39,7 @@ class MyModal(discord.ui.Modal, title='Предложить запись в сп
     async def on_submit(self, interaction: discord.Interaction):
         admin_channel = interaction.client.get_channel(ADMIN_CHANNEL_ID)
         if not admin_channel:
-            # Если бот не видит канал, он напишет это в чат
-            await interaction.response.send_message(f"Ошибка: Канал модерации (ID: {ADMIN_CHANNEL_ID}) не найден или у бота нет прав!", ephemeral=True)
+            await interaction.response.send_message(f"Ошибка: Канал модерации не найден! Проверьте права бота.", ephemeral=True)
             return
 
         embed = discord.Embed(title="📝 Новая заявка", color=discord.Color.orange())
@@ -61,7 +60,8 @@ class StartView(discord.ui.View):
 class Bot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
-        intents.members = True # На всякий случай для имен пользователей
+        intents.members = True
+        intents.message_content = True
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
