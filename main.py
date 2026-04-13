@@ -4,8 +4,8 @@ from discord import app_commands
 import os
 
 # --- ТВОИ НАСТРОЙКИ ---
-ADMIN_CHANNEL_ID = 1127290770571931739
-PUBLIC_LIST_CHANNEL_ID = 1359230337602949391
+ADMIN_CHANNEL_ID = 1493323818612293803
+PUBLIC_LIST_CHANNEL_ID = 1493323616886980768
 # ----------------------
 
 class AdminReview(discord.ui.View):
@@ -48,9 +48,9 @@ class AdminReview(discord.ui.View):
     async def reject(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.edit_message(content=f"❌ Отклонено модератором {interaction.user.mention}", view=None, embed=None)
 
-class MyModal(discord.ui.Modal, title='Предложить запись'):
+class MyModal(discord.ui.Modal, title='Предложить название'):
     answer = discord.ui.TextInput(
-        label='Ваше сообщение (1-200 символов)',
+        label='Ваше название (1-200 символов)',
         style=discord.TextStyle.paragraph,
         min_length=1,
         max_length=200
@@ -67,7 +67,7 @@ class MyModal(discord.ui.Modal, title='Предложить запись'):
         embed.add_field(name="Текст", value=self.answer.value, inline=False)
         
         await admin_channel.send(embed=embed, view=AdminReview(self.answer.value, interaction.user.display_name))
-        await interaction.response.send_message('Отправлено на проверку!', ephemeral=True)
+        await interaction.response.send_message('Отправлено на проверку(хуйню чтобы не кидали)!', ephemeral=True)
 
 class StartView(discord.ui.View):
     def __init__(self):
