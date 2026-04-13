@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands  # ВОТ ЭТОЙ СТРОКИ НЕ ХВАТАЛО
 import os
 
 # --- НАСТРОЙКИ (Замени на свои цифры) ---
